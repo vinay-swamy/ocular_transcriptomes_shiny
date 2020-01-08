@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 
 load('~/personal/shiny_practice/data/gene_names.Rdata')
 load('~/personal/shiny_practice/data/gtf.Rdata')
@@ -43,7 +44,6 @@ server <- function(input, output) {
         }, height = 25*(height+1) )
 
      }
-    
     plotOutput('plot')
   })
 }

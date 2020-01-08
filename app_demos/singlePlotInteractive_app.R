@@ -5,23 +5,6 @@ load('~/personal/shiny_practice/data/dev_shiny_data.Rdata')
 source('~/personal/shiny_practice/src/draw_transcripts_singleplot.R')
 
 ui <- fluidPage(
-    # tags$body(tags$div(id="ppitest", style="width:1in;visible:hidden;padding:0px")),
-    # tags$script('$(document).on("shiny:connected", function(e) {
-    #                                 var w = window.innerWidth;
-    #                                 var h = window.innerHeight;
-    #                                 var d =  document.getElementById("ppitest").offsetWidth;
-    #                                 var obj = {width: w, height: h, dpi: d};
-    #                                 Shiny.onInputChange("pltChange", obj);
-    #                             });
-    #                             $(window).resize(function(e) {
-    #                                 var w = $(this).width();
-    #                                 var h = $(this).height();
-    #                                 var d =  document.getElementById("ppitest").offsetWidth;
-    #                                 var obj = {width: w, height: h, dpi: d};
-    #                                 Shiny.onInputChange("pltChange", obj);
-    #                             });
-    #                         '),
-    
     titlePanel("TestApp"),
     fluidRow(
         column(4,

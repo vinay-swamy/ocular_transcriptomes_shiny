@@ -115,7 +115,6 @@ draw_all_transcripts <- function(gene, gtf, tissue, wsvg=64, hsvg=1){
 }
 
 draw_all_transcripts_static <- function(gene, gtf, tissue, wsvg=64, hsvg=1){
-  psi_var <- paste0(tissue, '_psi')
   main_cols <- c("seqid", "type",  "start", "end", "strand", "transcript_id", "gene_name", "exon_number" )
   gtf_gene <- filter(gtf, gene_name == gene)
   maxchar <- max(nchar(gtf_gene$transcript_id), nchar(gtf_gene$gene_name), 
@@ -138,7 +137,7 @@ draw_all_transcripts_static <- function(gene, gtf, tissue, wsvg=64, hsvg=1){
     }
   }
   
-  data <- filter(gtf_gene, type == 'exon') %>%  select(main_cols, PSI= !!psi_var) %>% inner_join(gtf_exons) %>% 
+  data <- filter(gtf_gene, type == 'exon') %>%  select(main_cols) %>% inner_join(gtf_exons) %>% 
     mutate(transcript_id=str_pad(transcript_id, maxchar, 'left'),
            gene_name=str_pad(string = gene_name,width = maxchar, side =  'left')) 
   plot_data <- data %>% 
