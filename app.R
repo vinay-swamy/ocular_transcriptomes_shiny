@@ -19,8 +19,9 @@ ui <- fluidPage(
                
         ),
         column(4,#----
-               selectInput(inputId = 'u_tissues',
+               selectizeInput(inputId = 'u_tissues',
                            label = 'Select up to 5 tissues',
+                           options = list(maxItems = 5),
                            choices = dev_subtissues,
                            selected = c('Retina_Adult.Tissue', 'RPE_Adult.Tissue'),
                            multiple = T)
