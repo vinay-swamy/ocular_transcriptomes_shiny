@@ -1,2 +1,2 @@
-# occular_transcriptome_shiny
-viz for occular transcriptomes
+# ocular_transcriptome_shiny
+viz for ocular transcriptomes
