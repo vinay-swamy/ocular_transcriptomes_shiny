@@ -85,13 +85,6 @@ draw_all_transcripts_interactive_v1 <- function(gene, gtf, tissues,keep_tx, wsvg
 
 }
 
-# # load('data/test_data_USP1.Rdata')
-# gene='USP1'
-# # cds_df=dev_cds_df
-# tissues=c('Retina_Adult.Tissue')
-# keep_tx <- unique(plotting_gtf$transcript_id)
-# # gtf <- dev_gtf
-
 draw_all_transcripts_interactive_v3 <- function(gene, gtf, tissues,keep_tx, wsvg=64, hsvg=1){
     gtf_gene <- filter(gtf, gene_name == gene, transcript_id %in% keep_tx)
     maxchar <- max(nchar(gtf_gene$transcript_id), nchar(gtf_gene$gene_name), 
@@ -110,8 +103,8 @@ draw_all_transcripts_interactive_v3 <- function(gene, gtf, tissues,keep_tx, wsvg
     point_type = ifelse(plot_data$strand[1] == '+',62, 60)
     plot <- ggplot(data = plot_data) +
         geom_hline(yintercept = 0, colour='black', size=2)+
-        geom_rect_interactive(aes(xmin=Xmin, xmax=Xmax, ymin=Ymin, ymax=Ymax,fill=`exon type`, tooltip=ttip))+
         geom_point(data=intron_gaps, aes(x=midpoint),y=0,size=20, fill='black', shape=point_type)+
+        geom_rect_interactive(aes(xmin=Xmin, xmax=Xmax, ymin=Ymin, ymax=Ymax,fill=`exon type`, tooltip=ttip))+
         #geom_rect( aes(xmin=Xmin, xmax=Xmax, ymin=Ymin, ymax=Ymax,fill=`exon type`))+
         scale_fill_manual(values = color_list) +
         facet_wrap(~transcript_id, ncol=1, strip.position = 'left')+
@@ -125,15 +118,6 @@ draw_all_transcripts_interactive_v3 <- function(gene, gtf, tissues,keep_tx, wsvg
     return(girafe(ggobj = plot, width_svg = wsvg, height_svg = hsvg))
     
 }
-
-
-
-
-
-
-
-
-
 
 
 
