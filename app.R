@@ -33,16 +33,18 @@ ui <- fluidPage(
                 column(2, actionButton('draw', label = 'click to redraw plot' ))
                 
             ),
-            h2('Percentage of total gene expression attributed to each transcript expressed in selected tissues'),
+            h3('Percentage of total gene expression attributed to each transcript expressed in selected tissues'),
             plotOutput('piu_plot', height = 500),
             h3('Exon Diagram of Transcripts for selected gene'),
             uiOutput('tx_diag'),
-            h4('Fraction of samples each transcript was constructed in'),
+            h3('Fraction of samples each transcript was constructed in'),
             plotOutput('num_samp_det')
         ),#----
         tabPanel('download', 
                     h2('Download De Novo Transcriptomes'),
-                    column(3, radioButtons(inputId = 'dl_base_choice',
+     
+                    column(3, p('select on option to download a .zip file containing a gtf for transcript annotation and a fasta for transcript sequences'),
+                           radioButtons(inputId = 'dl_base_choice',
                                            label = 'select an option', 
                                            c('pan-body(54 subtissues)' = 'panbody', 
                                              'pan-eye(6 subtissues)'  = 'paneye',
@@ -121,17 +123,17 @@ server <- function(input, output, session) {
     output$dl_download <- downloadHandler(
         filename = function(){
             if(input$dl_base_choice == 'subtissue'){
-                paste0(paste0(input$dl_tis_choice,'_', input$dl_dev_choice, '.Tissue', collapse = '-'), '.tar.gz', collapse = '-')
+                paste0(paste0(input$dl_tis_choice,'_', input$dl_dev_choice, '.Tissue', collapse = '-'), '.zip', collapse = '-')
             } else {
-                paste0(input$dl_base_choice, '.tar.gz')
+                paste0(input$dl_base_choice, '.zip')
             }
         },
         content = function(file){
             
             if(input$dl_base_choice == 'subtissue'){
-                fn=paste0('dl_data/', paste0(input$dl_tis_choice,'_', input$dl_dev_choice, '.Tissue', collapse = '-'), '.tar.gz', collapse = '-')
+                fn=paste0('dl_data/', paste0(input$dl_tis_choice,'_', input$dl_dev_choice, '.Tissue', collapse = '-'), '.zip', collapse = '-')
             } else {
-                fn=paste0('dl_data/', input$dl_base_choice, '.tar.gz')
+                fn=paste0('dl_data/', input$dl_base_choice, '.zip')
             }
             stopifnot(file.exists(fn))
             file.copy(from = fn, to = file)
