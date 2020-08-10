@@ -104,10 +104,10 @@ server <- function(input, output, session) {
             }, height = 500)
             
             output$transcript_diag <- renderGirafe({
-                draw_all_transcripts_interactive_v3(gene = s_gene, 
-                                                    tissues=s_tissues, 
+                draw_all_transcripts_interactive_v4(gene = s_gene, 
                                                     gtf=s_gtf,
                                                     #cds_df = s_cds_df,
+                                                    g=5,
                                                     keep_tx = s_keep_tx, 
                                                     hsvg = height) 
                 

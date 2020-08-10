@@ -160,6 +160,75 @@ c_merge <- function(mat){
 
 
 
+draw_all_transcripts_interactive_v4 <- function(gene, gtf, keep_tx, g, wsvg=64, hsvg=1){
+    #dynamically scale introns, because it doesnt work well precopmuting it for genes with a lot of exons
+    gtf_gene <- filter(gtf, gene_name == gene, transcript_id %in% keep_tx)
+    distinct_exons <- gtf_gene %>% filter(type == 'exon') %>% 
+        select(seqid, strand, start, end, Xmin, Xmax) %>% 
+        distinct %>% 
+        mutate(length = sqrt(end-start),) %>% 
+        arrange(start, length) %>% 
+        mutate(id= as.character(1:nrow(.))) %>% 
+        select(-length)
+    
+    fin <- distinct_exons %>% select(Xmin, Xmax, id) %>% c_merge %>% 
+        mutate(length = mean(Xmax-Xmin))
+    
+    
+    gap=mean(fin$length)/g
+    min_igap <- {fin$Xmin[2:nrow(fin)] - fin$Xmax[1:(nrow(fin )-1)]}
+    min_igap[min_igap<0] <- -Inf
+    min_igap_fail <-  which(min_igap>gap)
+    for(idx in min_igap_fail){
+        fin_idx= idx+1
+        #if(fin[fin_idx,'length'] >=gap){ gap <- fin[fin_idx,'length']+gap  }
+        delta = gap- min_igap[idx]
+        if(delta>0) print('MOOOOOO')
+        nfin <- nrow(fin)
+        fin[fin_idx:nfin,'Xmin'] <- fin[fin_idx:nfin,'Xmin']+delta
+        fin[fin_idx:nfin,'Xmax'] <- fin[fin_idx:nfin,'Xmax']+delta
+        
+    }
+    correct <-  fin %>% 
+        filter(!grepl('-',id))
+    to_correct <-  fin %>% 
+        filter(grepl('-',id)) %>%  
+        mutate(id= str_split(id, '-')) %>% 
+        unnest(id) %>% 
+        rename(new_xmin = Xmin, new_xmax = Xmax) %>% 
+        inner_join(distinct_exons) 
+    
+    res <- lapply(unique(to_correct$new_xmin), function(x) filter(to_correct, new_xmin == x) %>% 
+                      mutate(d=(min(Xmin)-x), Xmin =Xmin - d , Xmax =Xmax -d)) %>% bind_rows %>% 
+        select(all_of(colnames(correct)))
+    all_correct <- bind_rows(correct, res, ) %>% arrange(Xmin) %>% select(-length)
+    
+    
+    all_plot_data <- distinct_exons %>% 
+        select(-Xmax, -Xmin) %>%  
+        inner_join(all_correct) %>% 
+        inner_join(gtf_gene %>% select(-Xmin, -Xmax, -length)) %>% 
+        mutate(`exon type`=ifelse(is.na(novel_exon_id), 'ref', 'novel')) 
+    plot_data <- all_plot_data %>% filter(type == 'exon')
+    color_list <- c('black', 'red')
+    names(color_list) <- c('ref', 'novel')
+    plot <- ggplot(data = plot_data) +
+        geom_hline(yintercept = 0, colour='black', size=2)+
+        geom_rect_interactive(aes(xmin=Xmin, xmax=Xmax, ymin=Ymin, ymax=Ymax,fill=`exon type`, tooltip=ttip))+
+        #geom_rect( aes(xmin=Xmin, xmax=Xmax, ymin=Ymin, ymax=Ymax,fill=`exon type`))+
+        scale_fill_manual(values = color_list) +
+        facet_wrap(~transcript_id, ncol=1, strip.position = 'left')+
+        #ggtitle(gene) +
+        theme_void() +
+        theme(strip.text = element_text(angle = 180, size = 50), 
+              legend.title = element_text(size=80), legend.text =element_text(size = 70))
+    #print(nchar(plot$data$transcript_id))
+    #return(plot)
+    #girafe(ggobj = plot, width_svg = wsvg, height_svg = hsvg)
+    return(girafe(ggobj = plot, width_svg = wsvg, height_svg = hsvg))
+    
+}
+
 draw_all_transcripts_static_v4 <- function(gene, gtf, keep_tx, g){
     #dynamically scale introns, because it doesnt work well precopmuting it for genes with a lot of exons
     gtf <- new_plotting_gtf
@@ -225,7 +294,9 @@ draw_all_transcripts_static_v4 <- function(gene, gtf, keep_tx, g){
         facet_wrap(~transcript_id, ncol=1, strip.position = 'left')+
         #ggtitle(gene) +
         theme_void() +
-        theme(strip.text = element_text(angle = 180))
+        theme(strip.text = element_text(angle = 180, size = 50), 
+              legend.title = element_text(size=80), legend.text =element_text(size = 70))
+        #theme(strip.text = element_text(angle = 180))
     #print(nchar(plot$data$transcript_id))
     #return(plot)
     #girafe(ggobj = plot, width_svg = wsvg, height_svg = hsvg)
