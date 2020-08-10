@@ -16,7 +16,6 @@ Depends:
     ggiraph,
     ggplot2,
     gridExtra,
-    holepunch,
     RSQLite,
     shiny,
     tidyverse
