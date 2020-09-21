@@ -6,8 +6,6 @@
 
 R Shiny visualization for *de novo* transcriptomes.
 
-R Shiny visualization for *de novo* transcriptomes.
-
 To use run the following locally in R, or in the binder repo
 
 ```
