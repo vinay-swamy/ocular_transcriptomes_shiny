@@ -6,7 +6,7 @@
 
 R Shiny visualization for *de novo* transcriptomes.
 
-To use locally(recommended) run the following
+To use 
 
 ```
 git clone https://github.com/vinay-swamy/ocular_transcriptomes_shiny.git

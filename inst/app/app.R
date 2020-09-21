@@ -1,12 +1,13 @@
 library(shiny)
 suppressMessages(library(tidyverse))
 library(DBI)
+appdir <- system.file("app",  package = "OcularTxome")
 
-load('app_data/shiny_data.Rdata')
-source('src/draw_transcripts.R')
-source('src/plotting_funcs.R')
+load(paste0(appdir, '/app_data/shiny_data.Rdata'))
+source(paste0(appdir,'/src/draw_transcripts.R'))
+source(paste0(appdir,'.src/plotting_funcs.R'))
 
-db_name <- 'app_data/DNTX_db.sql'
+db_name <- paste0(appdir,'/app_data/DNTX_db.sql')
 con <- dbConnect(RSQLite::SQLite(),db_name)
 
 ui <- fluidPage(
@@ -20,7 +21,7 @@ ui <- fluidPage(
                                    choices = all_gene_names,
                                    selected = "USP1",
                                    multiple = F)
-                       
+
                 ),
                 column(4,
                        selectizeInput(inputId = 'u_tissues',
@@ -31,7 +32,7 @@ ui <- fluidPage(
                                    multiple = T)
                 ),
                 column(2, actionButton('draw', label = 'click to redraw plot' ))
-                
+
             ),
             h3('Percentage of total gene expression attributed to each transcript expressed in selected tissues'),
             plotOutput('piu_plot', height = 500),
@@ -40,13 +41,13 @@ ui <- fluidPage(
             h3('Fraction of samples each transcript was constructed in'),
             plotOutput('num_samp_det')
         ),#----
-        tabPanel('download', 
+        tabPanel('download',
                     h2('Download De Novo Transcriptomes'),
-     
+
                     column(3, p('select on option to download a .zip file containing a gtf for transcript annotation and a fasta for transcript sequences'),
                            radioButtons(inputId = 'dl_base_choice',
-                                           label = 'select an option', 
-                                           c('pan-body(54 subtissues)' = 'panbody', 
+                                           label = 'select an option',
+                                           c('pan-body(54 subtissues)' = 'panbody',
                                              'pan-eye(6 subtissues)'  = 'paneye',
                                              'by subtissue(eye only)' = 'subtissue')
                                            ),
@@ -54,25 +55,25 @@ ui <- fluidPage(
                                           label = 'download')
                             ),
                     column(3, conditionalPanel("input.dl_base_choice == 'subtissue'",
-                                               selectInput(inputId = 'dl_tis_choice', 
+                                               selectInput(inputId = 'dl_tis_choice',
                                                            label = 'select a tissue',
                                                            choices = c('Retina', 'RPE', 'Cornea'),
                                                            selected = NULL
                                                            ),
-                                               checkboxGroupInput(inputId = 'dl_dev_choice', 
-                                                            label = NULL, 
-                                                            choices = c('Adult' = 'Adult', 
+                                               checkboxGroupInput(inputId = 'dl_dev_choice',
+                                                            label = NULL,
+                                                            choices = c('Adult' = 'Adult',
                                                                         'Fetal' = 'Fetal'),
                                                             selected = 'Adult')
-                                                           
+
                                                )
-                           
+
                            )
 
                  )
-        
+
     )
-    
+
 )#----
 
 
@@ -86,8 +87,8 @@ server <- function(input, output, session) {
         })
         s_gene <- get_gene()
         s_tissues <- get_tissues()
-        
-        s_keep_tx <- con %>% tbl('tissue_det') %>% filter(gene_name ==s_gene) %>% 
+
+        s_keep_tx <- con %>% tbl('tissue_det') %>% filter(gene_name ==s_gene) %>%
              select(transcript_id, s_tissues) %>% collect %>% {.[rowSums(.[,-1]) >0 ,]}%>% pull(transcript_id)
         if(length(s_keep_tx) == 0){
             output$warning <- renderText('Gene not expressed in any selected tissues')
@@ -98,26 +99,26 @@ server <- function(input, output, session) {
             s_frac_det <- con %>% tbl('frac_samp_det') %>% filter(gene_name == s_gene) %>% collect %>% filter(transcript_id %in% s_keep_tx)
 
             height <- get_num_uniq_tx(gene = s_gene, gtf = s_gtf,keep_tx = s_keep_tx)
-            
+
             output$piu_plot <- renderPlot({
                 make_piu_bargraph(gene = s_gene, tissues = s_tissues, keep_tx = s_keep_tx,piu = s_piu)
             }, height = 500)
-            
+
             output$transcript_diag <- renderGirafe({
-                draw_all_transcripts_interactive_v4(gene = s_gene, 
+                draw_all_transcripts_interactive_v4(gene = s_gene,
                                                     gtf=s_gtf,
                                                     #cds_df = s_cds_df,
                                                     g=5,
-                                                    keep_tx = s_keep_tx, 
-                                                    hsvg = height) 
-                
+                                                    keep_tx = s_keep_tx,
+                                                    hsvg = height)
+
             })
-            
+
             output$num_samp_det <- renderPlot({
                 make_num_det_bargraph(gene = s_gene, tissues = s_tissues, num_det = s_frac_det, keep_tx = s_keep_tx)
             })
             girafeOutput('transcript_diag')
-    
+
         }
     })
     output$dl_download <- downloadHandler(
@@ -129,7 +130,7 @@ server <- function(input, output, session) {
             }
         },
         content = function(file){
-            
+
             if(input$dl_base_choice == 'subtissue'){
                 fn=paste0('dl_data/', paste0(input$dl_tis_choice,'_', input$dl_dev_choice, '.Tissue', collapse = '-'), '.zip', collapse = '-')
             } else {
@@ -138,7 +139,7 @@ server <- function(input, output, session) {
             stopifnot(file.exists(fn))
             file.copy(from = fn, to = file)
         }
-        
+
     )
 }
 

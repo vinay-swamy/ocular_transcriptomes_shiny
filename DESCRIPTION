@@ -1,16 +1,11 @@
-Type: Compendium
-Package: Ocular Transcriptome Visualization
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.1
-Authors@R: 
-    person(given = "Vinay",
-           family = "Swamy",
-           role = c("aut", "cre"),
-           email = "swamyvinny@gmail.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: A shiny app for visualizing de novo
-    transcriptomes
-License: What license it uses
+Package: OcularTxome
+Type: Package
+Title: Interactive Visualization for the Ocular Transcriptome 
+Version: 0.1.0
+Author: Vinay Swamy
+Maintainer: Vinay Swamy <swamyvinny@gmail.com>
+Description: Browse transcript expression data and explore novel gene isoforms expressed in the eye.
+License: GPL-3
 Depends: 
     DBI,
     ggiraph,
