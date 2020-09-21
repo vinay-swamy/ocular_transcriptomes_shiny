@@ -11,7 +11,8 @@ R Shiny visualization for *de novo* transcriptomes.
 To use run the following locally in R, or in the binder repo
 
 ```
-devtool::install_github('vinay-swamy/ocular_transcriptomes_shiny')
-OcularTxome::downloadAppData()
-OcularTxome::runOcularTxomeVis()
+Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")# ignore R version mismatches
+devtools::install_github('vinay-swamy/ocular_transcriptomes_shiny')
+OcularTxome::downloadAppData()# get data for app
+OcularTxome::runOcularTxomeVis()# run app
 ```
