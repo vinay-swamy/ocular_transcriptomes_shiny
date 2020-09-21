@@ -6,20 +6,12 @@
 
 R Shiny visualization for *de novo* transcriptomes.
 
-To use 
+R Shiny visualization for *de novo* transcriptomes.
+
+To use run the following locally in R, or in the binder repo
 
 ```
-git clone https://github.com/vinay-swamy/ocular_transcriptomes_shiny.git
-cd ocular_transcriptomes_shiny
-wget http://hpc.nih.gov/~mcgaugheyd/ocular_transcriptomes_shiny/dl_data.tar.gz  && tar -xzf dl_data.tar.gz && rm dl_data.tar.gz 
-wget http://hpc.nih.gov/~mcgaugheyd/ocular_transcriptomes_shiny/app_data.tar.gz   && tar -xzf app_data.tar.gz  && rm app_data.tar.gz  
+devtool::install_github('vinay-swamy/ocular_transcriptomes_shiny')
+OcularTxome::downloadAppData()
+OcularTxome::runOcularTxomeVis()
 ```
-
-Then open in Rstudio
-
-The PanEye transcript annotation(gtf + fasta) is can be directly downloaded by
-```
-wget http://hpc.nih.gov/~mcgaugheyd/ocular_transcriptomes_shiny/paneye.zip
-```
-
-
